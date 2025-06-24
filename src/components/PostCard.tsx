@@ -18,13 +18,13 @@ function PostCard({ post, dbUserId }: { post: Post, dbUserId: string | null }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasLiked, setHasLiked] = useState(post.likes.some((like) => like.userId === dbUserId));
   const [optimisticLikes, setOptimisticLikes] = useState(post._count.likes);
-  
+
 
 
 
   const handleLike = async () => {
-    if(isLiking) return;
-      
+    if (isLiking) return;
+
     try {
       setIsLiking(true);
       setHasLiked((prev) => !prev);
@@ -33,16 +33,16 @@ function PostCard({ post, dbUserId }: { post: Post, dbUserId: string | null }) {
     } catch (error) {
       setOptimisticLikes(post._count.likes);
       setHasLiked(post.likes.some((like) => like.userId === dbUserId));
-    }finally {
+    } finally {
       setIsLiking(false);
     }
   }
 
-  const handleAddComment = async () => {}
+  const handleAddComment = async () => { }
 
-  const handleDelete = async () => {}
+  const handleDelete = async () => { }
 
- 
+
   try {
 
   } catch (error) {

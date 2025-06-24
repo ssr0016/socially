@@ -1,3 +1,5 @@
+/** @format */
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -53,7 +55,7 @@ export async function getPosts() {
           },
           orderBy: {
             createdAt: "asc",
-          }
+          },
         },
         likes: {
           select: {
@@ -63,9 +65,9 @@ export async function getPosts() {
         _count: {
           select: {
             likes: true,
-            comments: true
-          }
-        }
+            comments: true,
+          },
+        },
       },
     });
 
@@ -76,11 +78,10 @@ export async function getPosts() {
   }
 }
 
-
 export async function toggleLike(postId: string) {
   try {
     const userId = await getDbUserId();
-    if(!userId) return;
+    if (!userId) return;
 
     // check if like exists
     const existingLike = await prisma.like.findUnique({
@@ -89,7 +90,7 @@ export async function toggleLike(postId: string) {
           userId,
           postId,
         },
-      }
+      },
     });
 
     const post = await prisma.post.findUnique({
@@ -97,13 +98,13 @@ export async function toggleLike(postId: string) {
         id: postId,
       },
       select: {
-       authorId: true,
-      }
+        authorId: true,
+      },
     });
 
-    if(!post) throw new Error("Post not found");
+    if (!post) throw new Error("Post not found");
 
-    if(existingLike) {
+    if (existingLike) {
       // unlike
       await prisma.like.delete({
         where: {
@@ -191,5 +192,30 @@ export async function createComment(postId: string, content: string) {
   } catch (error) {
     console.error("Failed to create comment:", error);
     return { success: false, error: "Failed to create comment" };
+  }
+}
+
+export async function deletePost(postId: string) {
+  try {
+    const userId = await getDbUserId();
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+    if (!post) throw new Error("Post not found");
+    if (post.authorId !== userId)
+      throw new Error("Unauthorized - no delete permission");
+
+    await prisma.post.delete({
+      where: { id: postId },
+    });
+
+    revalidatePath("/"); // purge the cache
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete post:", error);
+    return { success: false, error: "Failed to delete post" };
   }
 }
