@@ -20,19 +20,19 @@ function CreatePost() {
     const [showImageUpload, setShowImageUpload] = useState(false);
 
     const handleSubmit = async () => {
-        if(!content.trim() && !imageUrl) return;
-        
-        setIsPosting(true);
-        try{
-          const result = await createPost(content, imageUrl);
-          if(result?.success){
-            // reset the form
-            setContent("");
-            setImageUrl("");
-            setShowImageUpload(false);
+        if (!content.trim() && !imageUrl) return;
 
-            toast.success("Post created successfully");
-          }
+        setIsPosting(true);
+        try {
+            const result = await createPost(content, imageUrl);
+            if (result?.success) {
+                // reset the form
+                setContent("");
+                setImageUrl("");
+                setShowImageUpload(false);
+
+                toast.success("Post created successfully");
+            }
         } catch (error) {
             console.log("Failed to create post: ", error);
             toast.error("Failed to create post");
